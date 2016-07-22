@@ -1,0 +1,23 @@
+{
+  "name": "playground",
+  "description": "",
+  "main": "index.js",
+  "authors": [
+    "Amanda Roscoe <aroscoe@corpu.com>"
+  ],
+  "license": "ISC",
+  "moduleType": [],
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "vendor",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular": "1.2.x",
+    "fontawesome": "~4.3.0"
+  }
+}

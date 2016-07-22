@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>PlayGround</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="vendor/angular/angular.min.js"></script>
+  <script src="app/module.js"></script>
+  <script src="app/config.js"></script>
+  <script src="app/playground.ctrl.js"></script>
+
+  <style>
+    ul.list-unstyled { list-style: none; padding-left: 0; }
+    .req { color: red; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <div class="container" ng-app="playground" ng-controller="mainCtrl">
+    <form ng-model="ans">
+      <fieldset>
+        <label>{{singleChoice.text}}<span ng-if="singleChoice.requiredFlag == true" class="req">*</span></label>
+        <ul class="list-unstyled">
+          <li ng-repeat="scOption in singleChoice.options">
+            <input type="radio" name="{{singleChoice._id}}" value="{{scOption.displayValue}}" id="{{singleChoice._id}}-{{$index}}"> <label for="{{singleChoice._id}}-{{$index}}">{{ scOption.displayValue }}</label>
+          </li>
+        </ul>
+      </fieldset>
+
+      <fieldset>
+        <label>{{singleChoice2.text}}<span ng-if="singleChoice2.requiredFlag == true" class="req">*</span></label>
+        <ul class="list-unstyled">
+          <li ng-repeat="scOption in singleChoice2.options">
+            <input type="radio" name="{{singleChoice2._id}}" value="{{scOption.displayValue}}" id="{{singleChoice2._id}}-{{$index}}" ng-if="!scOption.type"> <label for="{{singleChoice2._id}}-{{$index}}">{{ scOption.displayValue }}</label>
+          </li>
+        </ul>
+      </fieldset>
+
+      <fieldset>
+        <label>{{multipleChoice.text}}<span ng-if="multipleChoice.requiredFlag == true" class="req">*</span></label>
+        <ul class="list-unstyled">
+          <li ng-repeat="mcOption in multipleChoice.options">
+            <input type="checkbox" name="{{multipleChoice._id}}" value="{{mcOption.displayValue}}" id="{{multipleChoice._id}}-{{$index}}"> <label for="{{multipleChoice._id}}-{{$index}}">{{ mcOption.displayValue }}</label>
+          </li>
+        </ul>
+      </fieldset>
+
+      <fieldset>
+        <label>{{ textAnswer.text }}<span ng-if="textAnswer.requiredFlag == true" class="req">*</span></label>
+        <input type="text" name="textAnswer._id" id="{{textAnswer._id}}">
+      </fieldset>
+
+      <fieldset>
+        <label>{{ number.text }}<span ng-if="textAnswer.requiredFlag == true" class="req">*</span></label>
+        <input type="number" min="{{scaleFormat.minimum}}" max="{{scaleFormat.maximum}}" value="{{scaleFormat.startingValue}}">
+      </fieldset>
+
+      <fieldset>
+       <label>{{ slider.text }}</label>
+       <input type="range" min="{{slider.scaleFormat.minimum}}" max="{{slider.scaleFormat.maximum}}" value="{{slider.scaleFormat.startingValue}}" step="{{slider.scaleFormat.incrementBy}}">
+      </fieldset>
+    </form>
+  </div>
+</body>
+</html>
