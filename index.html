@@ -42,125 +42,125 @@
 <body ng-app="playground">
   <!-- EDIT -->
   <div class="container" ng-controller="editCtrl">
-  <div class="page-header">
-  <div class="row">
-    <div class="col-xs-12">
-      <h2>Let's Build A Question!</h2>
-    </div>
-  </div>
-  </div>
-  <form ng-model="tempQuestion">
-      <div class="form-group row">
+    <div class="page-header">
+      <div class="row">
         <div class="col-xs-12">
-        <label><h3>Question Type</h3></label>
-        <select class="form-control" ng-model="tempQuestion.type" ng-change="updateEditView(tempQuestion.type)">
-          <option ng-repeat="(key, data) in questionConfigTypes" value="{{ key }}">{{ key }}</option>
-        </select>
+          <h2>Let's Build A Question!</h2>
+        </div>
       </div>
     </div>
-    <div class="form-group">
-      <div class="row">
-        <div class="col-sm-8">
-          <label for="questionText"><h3>What question do you want to ask?<h3></label>
+    <form ng-model="tempQuestion">
+      <div class="form-group row">
+        <div class="col-xs-12">
+          <label><h3>Question Type</h3></label>
+          <select class="form-control" ng-model="tempQuestion.type" ng-change="updateEditView(tempQuestion.type)">
+            <option ng-repeat="(key, data) in questionConfigTypes" value="{{ key }}">{{ key }}</option>
+          </select>
         </div>
-        <div class="col-sm-4 questionReq">
-          <div class="checkbox">
-            <label for="reqFlag"><input type="checkbox" name="reqFlag" id="reqFlag" ng-model="tempQuestion.requiredFlag" ng-true-value="true"> Require this question</label>
+      </div>
+      <div class="form-group">
+        <div class="row">
+          <div class="col-sm-8">
+            <label for="questionText"><h3>What question do you want to ask?<h3></label>
+          </div>
+          <div class="col-sm-4 questionReq">
+            <div class="checkbox">
+              <label for="reqFlag"><input type="checkbox" name="reqFlag" id="reqFlag" ng-model="tempQuestion.requiredFlag" ng-true-value="true"> Require this question</label>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-xs-12">
+            <textarea class="form-control" ng-model="tempQuestion.text" id="questionText" rows="4" placeholder="Sample Text"></textarea>
           </div>
         </div>
       </div>
-      <div class="row">
+      <div class="form-group row" ng-if="tempQuestionConfig.editOptions.indexOf('options') >= 0">
         <div class="col-xs-12">
-          <textarea class="form-control" ng-model="tempQuestion.text" id="questionText" rows="4" placeholder="Sample Text"></textarea>
+          <h3>Choice Options</h3>
+          <label class="subtle" ng-if="tempQuestion.options.length > 0">Option</label>
+          <div class="container">
+            <ul class="list-unstyled">
+              <li ng-repeat="option in tempQuestion.options" class="row questionOptions">
+                <div class="col-xs-6">
+                  <input class="form-control" type="text" ng-model="option.option_title" placeholder="Option {{$index+1}}">
+                </div>
+                <div class="col-xs-6">
+                  <a class="btn btn-danger btn-xs" type="button" ng-click="deleteOption(tempQuestion, option)"><i class="fa fa-minus fa-white"></i></a>
+                </div>
+              </li>
+            </ul>
+          </div>
+          <button class="btn btn-default btn-xs" type="button" ng-click="addOption(tempQuestion)"><i class="fa fa-plus icon-white"></i> Click to Add Option</button>
         </div>
       </div>
-    </div>
-    <div class="form-group row" ng-if="tempQuestionConfig.editOptions.indexOf('options') >= 0">
-      <div class="col-xs-12">
-        <h3>Choice Options</h3>
-        <label class="subtle" ng-if="tempQuestion.options.length > 0">Option</label>
+      <div class="form-group row" ng-if="tempQuestionConfig.editOptions.indexOf('scaleFormat') >= 0 || tempQuestionConfig.editOptions.indexOf('scaleLabels') >= 0" class="row" >
+        <div class="col-xs-12">
+          <h3>Scale</h3>
+        </div>
         <div class="container">
-          <ul class="list-unstyled">
-            <li ng-repeat="option in tempQuestion.options" class="row questionOptions">
-              <div class="col-xs-6">
-                <input class="form-control" type="text" ng-model="option.option_title" placeholder="Option {{$index+1}}">
+          <div class="col-sm-6">
+            <ul class="list-unstyled">
+              <div ng-if="tempQuestionConfig.editOptions.indexOf('scaleLabels') >= 0 || tempQuestionConfig.editOptions.indexOf('scaleFormat') >= 0">
+                <li class="form-group row">
+                  <label class="col-sm-3 col-xs-4">Left Label</label>
+                  <div class="col-sm-9 col-xs-8"><input class="form-control" type="text" ng-model="tempQuestion.scaleFormat.leftLabel" placeholder="Not At All Likely"></div>
+                </li>
+                <li class="form-group row">
+                  <label class="col-sm-3 col-xs-4">Right Label</label>
+                  <div class="col-sm-9 col-xs-8"><input class="form-control" type="text" ng-model="tempQuestion.scaleFormat.rightLabel" placeholder="Extremely Likely"></div>
+                </li>
               </div>
-              <div class="col-xs-6">
-                <a class="btn btn-danger btn-xs" type="button" ng-click="deleteOption(tempQuestion, option)"><i class="fa fa-minus fa-white"></i></a>
+              <div ng-if="tempQuestionConfig.editOptions.indexOf('scaleFormat') >= 0">
+                <li class="form-group row">
+                  <label class="col-sm-3 col-xs-4">Minimum</label>
+                  <div class="col-sm-9 col-xs-8"><input class="form-control" type="number" ng-model="tempQuestion.scaleFormat.minimum"></div></li>
+                  <li class="form-group row">
+                    <label class="col-sm-3 col-xs-4">Maximum</label>
+                    <div class="col-sm-9 col-xs-8"><input class="form-control" type="number" ng-model="tempQuestion.scaleFormat.maximum"></div></li>
+                    <li class="form-group row">
+                      <label class="col-sm-3 col-xs-4">Increment By</label>
+                      <div class="col-sm-9 col-xs-8"><input class="form-control" type="number" ng-model="tempQuestion.scaleFormat.incrementBy"></div>
+                    </li>
+                  </div>
+                </ul>
               </div>
-            </li>
-          </ul>
-        </div>
-        <button class="btn btn-default btn-xs" type="button" ng-click="addOption(tempQuestion)"><i class="fa fa-plus icon-white"></i> Click to Add Option</button>
-      </div>
-    </div>
-    <div class="form-group row" ng-if="tempQuestionConfig.editOptions.indexOf('scaleFormat') >= 0 || tempQuestionConfig.editOptions.indexOf('scaleLabels') >= 0" class="row" >
-      <div class="col-xs-12">
-        <h3>Scale</h3>
-      </div>
-      <div class="container">
-        <div class="col-sm-6">
-          <ul class="list-unstyled">
-            <div ng-if="tempQuestionConfig.editOptions.indexOf('scaleLabels') >= 0 || tempQuestionConfig.editOptions.indexOf('scaleFormat') >= 0">
-              <li class="form-group row">
-                <label class="col-sm-3 col-xs-4">Left Label</label>
-                <div class="col-sm-9 col-xs-8"><input class="form-control" type="text" ng-model="tempQuestion.scaleFormat.leftLabel" placeholder="Not At All Likely"></div>
-              </li>
-              <li class="form-group row">
-                <label class="col-sm-3 col-xs-4">Right Label</label>
-                <div class="col-sm-9 col-xs-8"><input class="form-control" type="text" ng-model="tempQuestion.scaleFormat.rightLabel" placeholder="Extremely Likely"></div>
-              </li>
             </div>
-            <div ng-if="tempQuestionConfig.editOptions.indexOf('scaleFormat') >= 0">
-              <li class="form-group row">
-                <label class="col-sm-3 col-xs-4">Minimum</label>
-                <div class="col-sm-9 col-xs-8"><input class="form-control" type="number" ng-model="tempQuestion.scaleFormat.minimum"></div></li>
-              <li class="form-group row">
-                <label class="col-sm-3 col-xs-4">Maximum</label>
-                <div class="col-sm-9 col-xs-8"><input class="form-control" type="number" ng-model="tempQuestion.scaleFormat.maximum"></div></li>
-              <li class="form-group row">
-                <label class="col-sm-3 col-xs-4">Increment By</label>
-                <div class="col-sm-9 col-xs-8"><input class="form-control" type="number" ng-model="tempQuestion.scaleFormat.incrementBy"></div>
-              </li>
+          </div>
+          <div class="form-group row" ng-if="tempQuestionConfig.editOptions.indexOf('rows') >= 0">
+            <div class="col-xs-12">
+              <h3>Row Headers</h3>
+              <div class="container">
+                <ul class="list-unstyled">
+                  <li ng-repeat="row in tempQuestion.rows" class="row questionRows">
+                    <div class="col-xs-6">
+                      <input class="form-control" type="text" ng-model="row.row_title" placeholder="Row {{$index + 1}}">
+                    </div>
+                    <div class="col-xs-6">
+                      <a class="btn btn-danger btn-xs right" type="button" ng-click="deleteRow(tempQuestion, row)"><i class="fa fa-minus fa-white"></i></a>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+              <button class="btn btn-default btn-xs" type="button" ng-click="addRow(tempQuestion)"><i class="fa fa-plus icon-white"></i> Click to Add Option</button>
             </div>
-          </ul>
+          </div>
+        </form>
+        <div class="row preview" ng-if="tempQuestion.type">
+          <div class="col-xs-12">
+            <div class="panel panel-primary">
+              <div class="panel-heading">Preview</div>
+              <div ng-if="tempQuestion.type" question-directive question="tempQuestion" class="panel-body"></div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-xs-12"><p>{{tempQuestion}}</p></div>
         </div>
       </div>
-    </div>
-    <div class="form-group row" ng-if="tempQuestionConfig.editOptions.indexOf('rows') >= 0">
-      <div class="col-xs-12">
-        <h3>Row Headers</h3>
-        <div class="container">
-          <ul class="list-unstyled">
-            <li ng-repeat="row in tempQuestion.rows" class="row questionRows">
-              <div class="col-xs-6">
-                <input class="form-control" type="text" ng-model="row.row_title" placeholder="Row {{$index + 1}}">
-              </div>
-              <div class="col-xs-6">
-                <a class="btn btn-danger btn-xs right" type="button" ng-click="deleteRow(tempQuestion, row)"><i class="fa fa-minus fa-white"></i></a>
-              </div>
-            </li>
-          </ul>
-        </div>
-        <button class="btn btn-default btn-xs" type="button" ng-click="addRow(tempQuestion)"><i class="fa fa-plus icon-white"></i> Click to Add Option</button>
-      </div>
-    </div>
-  </form>
-  <div class="row preview" ng-if="tempQuestion.type">
-    <div class="col-xs-12">
-      <div class="panel panel-primary">
-        <div class="panel-heading">Preview</div>
-        <div ng-if="tempQuestion.type" question-directive question="tempQuestion" class="panel-body"></div>
-      </div>
-    </div>
-  </div>
-  <div class="row">
-    <div class="col-xs-12"><p>{{tempQuestion}}</p></div>
-  </div>
-</div>
-<!-- END EDIT -->
-<hr>
-<!-- PREVIEW -->
+      <!-- END EDIT -->
+      <hr>
+      <!-- PREVIEW -->
 <!-- <div class="container" ng-controller="mainCtrl">
   <form ng-model="ans">
     <fieldset>
