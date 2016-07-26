@@ -75,7 +75,7 @@ angular
 
   $scope.deleteRow = function(tempQuestion, row){
     for(var i = 0; i < tempQuestion.rows.length; i++){
-      if(tempQuestion.rows[i].option_id == rows.row_id){
+      if(tempQuestion.rows[i].row_id == row.row_id){
         tempQuestion.rows.splice(i, 1);
         // need to call service to remove
         break;

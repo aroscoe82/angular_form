@@ -42,6 +42,13 @@
 <body ng-app="playground">
   <!-- EDIT -->
   <div class="container" ng-controller="editCtrl">
+  <div class="page-header">
+  <div class="row">
+    <div class="col-xs-12">
+      <h2>Let's Build A Question!</h2>
+    </div>
+  </div>
+  </div>
   <form ng-model="tempQuestion">
       <div class="form-group row">
         <div class="col-xs-12">
@@ -140,8 +147,8 @@
     </div>
   </form>
   <div class="row preview" ng-if="tempQuestion.type">
-    <div class="col-sm-6">
-      <div class="panel panel-default">
+    <div class="col-xs-12">
+      <div class="panel panel-primary">
         <div ng-if="tempQuestion.type" question-directive question="tempQuestion" class="panel-body"></div>
       </div>
     </div>
