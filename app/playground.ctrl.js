@@ -12,7 +12,7 @@ angular
   $scope.tempQuestion = {
       type: "",
       requiredFlag: "false",
-      text: "Sample Text"
+      text: ""
     };
 
   $scope.updateEditView = function(view){

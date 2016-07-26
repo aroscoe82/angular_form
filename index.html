@@ -71,7 +71,7 @@
       </div>
       <div class="row">
         <div class="col-xs-12">
-          <textarea class="form-control" ng-model="tempQuestion.text" id="questionText" rows="4"></textarea>
+          <textarea class="form-control" ng-model="tempQuestion.text" id="questionText" rows="4" placeholder="Sample Text"></textarea>
         </div>
       </div>
     </div>
@@ -149,6 +149,7 @@
   <div class="row preview" ng-if="tempQuestion.type">
     <div class="col-xs-12">
       <div class="panel panel-primary">
+        <div class="panel-heading">Preview</div>
         <div ng-if="tempQuestion.type" question-directive question="tempQuestion" class="panel-body"></div>
       </div>
     </div>
