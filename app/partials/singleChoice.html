@@ -1,0 +1,15 @@
+<div class="form-group">
+  <label>{{ question.text }}<span ng-if="question.requiredFlag" class="reqFlag">*</span></label>
+  <div ng-if="question.options.length > 5">
+    <select class="form-control" ng-model="question.test" ng-options="option.option_title for option in question.options">
+      <option value="">-- Please Select --</option>
+    </select>
+  </div>
+  <div ng-if="question.options.length <= 5">
+    <ul class="list-unstyled">
+      <li class="radio" ng-repeat="option in question.options">
+        <label for="option-{{option.option_id}}"><input type="radio" name="group-{{question._id}}" id="option-{{option.option_id}}" value="{{option.option_value}}">  {{option.option_title}}</label>
+      </li>
+    </ul>
+  </div>
+</div>

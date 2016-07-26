@@ -9,56 +9,213 @@
   <script src="app/config.js"></script>
   <script src="app/playground.ctrl.js"></script>
 
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <link rel="stylesheet" type="text/css" href="vendor/fontawesome/css/font-awesome.css">
+
   <style>
+    h3 { font-size: 1.25em; margin: 0 0 .5em; }
+    .hidden { display: none; }
+    fieldset { border: 0; }
+    fieldset.row, .preview { padding-top: 1em; padding-bottom: 1em; }
+    fieldset label { margin-right: 1em; }
+    fieldset label.subtle { color: #b0b0b0; }
     ul.list-unstyled { list-style: none; padding-left: 0; }
-    .req { color: red; font-weight: bold; }
+    li.questionOptions + li.questionOptions, li.questionRows + li.questionRows { margin-top: .5em; }
+
+    .questionReq { text-align: right; }
+    .questionReq label { margin-left: .5em; color: #b0b0b0; }
+    .reqFlag { color: red; font-weight: bold; padding-left: .2em;}
+
+    textarea { display: block; width: 100%; }
+
+    // Question Display
+    .list-justified { width: 100%; display: block; }
+    .list-justified li { display: table-cell; width: 1%; text-align: center; }
+    .list-justified li label { display: block; }
+
+    .multipleChoiceListChooseOne thead th{ text-align: center; }
+    .multipleChoiceListChooseOne tbody td { text-align: center; }
   </style>
 </head>
-<body>
-  <div class="container" ng-app="playground" ng-controller="mainCtrl">
-    <form ng-model="ans">
-      <fieldset>
-        <label>{{singleChoice.text}}<span ng-if="singleChoice.requiredFlag == true" class="req">*</span></label>
-        <ul class="list-unstyled">
-          <li ng-repeat="scOption in singleChoice.options">
-            <input type="radio" name="{{singleChoice._id}}" value="{{scOption.displayValue}}" id="{{singleChoice._id}}-{{$index}}"> <label for="{{singleChoice._id}}-{{$index}}">{{ scOption.displayValue }}</label>
-          </li>
-        </ul>
-      </fieldset>
-
-      <fieldset>
-        <label>{{singleChoice2.text}}<span ng-if="singleChoice2.requiredFlag == true" class="req">*</span></label>
-        <ul class="list-unstyled">
-          <li ng-repeat="scOption in singleChoice2.options">
-            <input type="radio" name="{{singleChoice2._id}}" value="{{scOption.displayValue}}" id="{{singleChoice2._id}}-{{$index}}" ng-if="!scOption.type"> <label for="{{singleChoice2._id}}-{{$index}}">{{ scOption.displayValue }}</label>
-          </li>
-        </ul>
-      </fieldset>
-
-      <fieldset>
-        <label>{{multipleChoice.text}}<span ng-if="multipleChoice.requiredFlag == true" class="req">*</span></label>
-        <ul class="list-unstyled">
-          <li ng-repeat="mcOption in multipleChoice.options">
-            <input type="checkbox" name="{{multipleChoice._id}}" value="{{mcOption.displayValue}}" id="{{multipleChoice._id}}-{{$index}}"> <label for="{{multipleChoice._id}}-{{$index}}">{{ mcOption.displayValue }}</label>
-          </li>
-        </ul>
-      </fieldset>
-
-      <fieldset>
-        <label>{{ textAnswer.text }}<span ng-if="textAnswer.requiredFlag == true" class="req">*</span></label>
-        <input type="text" name="textAnswer._id" id="{{textAnswer._id}}">
-      </fieldset>
-
-      <fieldset>
-        <label>{{ number.text }}<span ng-if="textAnswer.requiredFlag == true" class="req">*</span></label>
-        <input type="number" min="{{scaleFormat.minimum}}" max="{{scaleFormat.maximum}}" value="{{scaleFormat.startingValue}}">
-      </fieldset>
-
-      <fieldset>
-       <label>{{ slider.text }}</label>
-       <input type="range" min="{{slider.scaleFormat.minimum}}" max="{{slider.scaleFormat.maximum}}" value="{{slider.scaleFormat.startingValue}}" step="{{slider.scaleFormat.incrementBy}}">
-      </fieldset>
-    </form>
+<body ng-app="playground">
+  <!-- EDIT -->
+  <div class="container" ng-controller="editCtrl">
+  <form ng-model="tempQuestion">
+      <div class="form-group row">
+        <div class="col-xs-12">
+        <label><h3>Question Type</h3></label>
+        <select class="form-control" ng-model="tempQuestion.type" ng-change="updateEditView(tempQuestion.type)">
+          <option ng-repeat="(key, data) in questionConfigTypes" value="{{ key }}">{{ key }}</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="row">
+        <div class="col-sm-8">
+          <label for="questionText"><h3>What question do you want to ask?<h3></label>
+        </div>
+        <div class="col-sm-4 questionReq">
+          <div class="checkbox">
+            <label for="reqFlag"><input type="checkbox" name="reqFlag" id="reqFlag" ng-model="tempQuestion.requiredFlag" ng-true-value="true"> Require this question</label>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-xs-12">
+          <textarea class="form-control" ng-model="tempQuestion.text" id="questionText" rows="4"></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="form-group row" ng-if="tempQuestionConfig.editOptions.indexOf('options') >= 0">
+      <div class="col-xs-12">
+        <h3>Choice Options</h3>
+        <label class="subtle" ng-if="tempQuestion.options.length > 0">Option</label>
+        <div class="container">
+          <ul class="list-unstyled">
+            <li ng-repeat="option in tempQuestion.options" class="row questionOptions">
+              <div class="col-xs-6">
+                <input class="form-control" type="text" ng-model="option.option_title" placeholder="Option {{$index+1}}">
+              </div>
+              <div class="col-xs-6">
+                <a class="btn btn-danger btn-xs" type="button" ng-click="deleteOption(tempQuestion, option)"><i class="fa fa-minus fa-white"></i></a>
+              </div>
+            </li>
+          </ul>
+        </div>
+        <button class="btn btn-default btn-xs" type="button" ng-click="addOption(tempQuestion)"><i class="fa fa-plus icon-white"></i> Click to Add Option</button>
+      </div>
+    </div>
+    <div class="form-group row" ng-if="tempQuestionConfig.editOptions.indexOf('scaleFormat') >= 0 || tempQuestionConfig.editOptions.indexOf('scaleLabels') >= 0" class="row" >
+      <div class="col-xs-12">
+        <h3>Scale</h3>
+      </div>
+      <div class="container">
+        <div class="col-sm-6">
+          <ul class="list-unstyled">
+            <div ng-if="tempQuestionConfig.editOptions.indexOf('scaleLabels') >= 0 || tempQuestionConfig.editOptions.indexOf('scaleFormat') >= 0">
+              <li class="form-group row">
+                <label class="col-sm-3 col-xs-4">Left Label</label>
+                <div class="col-sm-9 col-xs-8"><input class="form-control" type="text" ng-model="tempQuestion.scaleFormat.leftLabel" placeholder="Not At All Likely"></div>
+              </li>
+              <li class="form-group row">
+                <label class="col-sm-3 col-xs-4">Right Label</label>
+                <div class="col-sm-9 col-xs-8"><input class="form-control" type="text" ng-model="tempQuestion.scaleFormat.rightLabel" placeholder="Extremely Likely"></div>
+              </li>
+            </div>
+            <div ng-if="tempQuestionConfig.editOptions.indexOf('scaleFormat') >= 0">
+              <li class="form-group row">
+                <label class="col-sm-3 col-xs-4">Minimum</label>
+                <div class="col-sm-9 col-xs-8"><input class="form-control" type="number" ng-model="tempQuestion.scaleFormat.minimum"></div></li>
+              <li class="form-group row">
+                <label class="col-sm-3 col-xs-4">Maximum</label>
+                <div class="col-sm-9 col-xs-8"><input class="form-control" type="number" ng-model="tempQuestion.scaleFormat.maximum"></div></li>
+              <li class="form-group row">
+                <label class="col-sm-3 col-xs-4">Increment By</label>
+                <div class="col-sm-9 col-xs-8"><input class="form-control" type="number" ng-model="tempQuestion.scaleFormat.incrementBy"></div>
+              </li>
+            </div>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="form-group row" ng-if="tempQuestionConfig.editOptions.indexOf('rows') >= 0">
+      <div class="col-xs-12">
+        <h3>Row Headers</h3>
+        <div class="container">
+          <ul class="list-unstyled">
+            <li ng-repeat="row in tempQuestion.rows" class="row questionRows">
+              <div class="col-xs-6">
+                <input class="form-control" type="text" ng-model="row.row_title" placeholder="Row {{$index + 1}}">
+              </div>
+              <div class="col-xs-6">
+                <a class="btn btn-danger btn-xs right" type="button" ng-click="deleteRow(tempQuestion, row)"><i class="fa fa-minus fa-white"></i></a>
+              </div>
+            </li>
+          </ul>
+        </div>
+        <button class="btn btn-default btn-xs" type="button" ng-click="addRow(tempQuestion)"><i class="fa fa-plus icon-white"></i> Click to Add Option</button>
+      </div>
+    </div>
+  </form>
+  <div class="row preview" ng-if="tempQuestion.type">
+    <div class="col-sm-6">
+      <div class="panel panel-default">
+        <div ng-if="tempQuestion.type" question-directive question="tempQuestion" class="panel-body"></div>
+      </div>
+    </div>
   </div>
+  <div class="row">
+    <div class="col-xs-12"><p>{{tempQuestion}}</p></div>
+  </div>
+</div>
+<!-- END EDIT -->
+<hr>
+<!-- PREVIEW -->
+<!-- <div class="container" ng-controller="mainCtrl">
+  <form ng-model="ans">
+    <fieldset>
+      <p><em>singleChoice</em></p>
+      <label>{{singleChoice.text}}<span ng-if="singleChoice.requiredFlag == true" class="reqFlag">*</span></label>
+      <ul class="list-unstyled">
+        <li ng-repeat="scOption in singleChoice.options">
+          <input type="radio" name="{{singleChoice._id}}" value="{{scOption.displayValue}}" id="{{singleChoice._id}}-{{$index}}"> <label for="{{singleChoice._id}}-{{$index}}">{{ scOption.displayValue }}</label>
+        </li>
+      </ul>
+    </fieldset>
+
+    <fieldset>
+      <p><em>singleChoice with write-in</em></p>
+      <label>{{singleChoice2.text}}<span ng-if="singleChoice2.requiredFlag == true" class="reqFlag">*</span></label>
+      <ul class="list-unstyled">
+        <li ng-repeat="scOption in singleChoice2.options">
+          <input type="radio" name="{{singleChoice2._id}}" value="{{scOption.displayValue}}" id="{{singleChoice2._id}}-{{$index}}" ng-if="!scOption.type"> <label for="{{singleChoice2._id}}-{{$index}}">{{ scOption.displayValue }}</label>
+        </li>
+      </ul>
+    </fieldset>
+
+    <fieldset>
+      <p><em>singleChoice - list</em></p>
+      <label>{{singleChoice.text}}<span ng-if="singleChoice.requiredFlag == true" class="reqFlag">*</span></label>
+      <select>
+        <option ng-repeat="scOption in singleChoice.options" value="scOption.displayValue">{{scOption.displayValue}}</option>
+      </select>
+    </fieldset>
+
+    <fieldset>
+      <p><em>multipleChoice - checkbox</em></p>
+      <label>{{multipleChoice.text}} Please check all that apply.<span ng-if="multipleChoice.requiredFlag == true" class="reqFlag">*</span></label>
+      <ul class="list-unstyled">
+        <li ng-repeat="mcOption in multipleChoice.options">
+          <input type="checkbox" name="{{multipleChoice._id}}" value="{{mcOption.displayValue}}" id="{{multipleChoice._id}}-{{$index}}"> <label for="{{multipleChoice._id}}-{{$index}}">{{ mcOption.displayValue }}</label>
+        </li>
+      </ul>
+    </fieldset>
+
+    <fieldset>
+      <p><em>textAnswer - short</em></p>
+      <label>{{ textAnswer.text }}<span ng-if="textAnswer.requiredFlag == true" class="reqFlag">*</span></label>
+      <input type="text" name="textAnswer._id" id="{{textAnswer._id}}">
+    </fieldset>
+
+    <fieldset>
+      <p><em>textAnswer - long</em></p>
+      <label>{{ textAnswer.text }}<span ng-if="textAnswer.requiredFlag == true" class="reqFlag">*</span></label>
+      <textarea name="textAnswer._id" id="{{textAnswer._id}}"></textarea>
+    </fieldset>
+
+    <fieldset>
+      <label>{{ number.text }}<span ng-if="number.requiredFlag == true" class="reqFlag">*</span></label>
+      <input type="number" min="{{number.scaleFormat.minimum}}" max="{{number.scaleFormat.maximum}}" value="{{number.scaleFormat.startingValue}}">
+    </fieldset>
+
+    <fieldset>
+     <label>{{ slider.text }}</label>
+     <input type="range" min="{{slider.scaleFormat.minimum}}" max="{{slider.scaleFormat.maximum}}" value="{{slider.scaleFormat.startingValue}}" step="{{slider.scaleFormat.incrementBy}}">
+   </fieldset>
+ </form>
+</div> -->
+<!-- END PREVIEW -->
 </body>
 </html>

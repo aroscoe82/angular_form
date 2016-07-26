@@ -1,0 +1,17 @@
+<div class="form-group">
+  <label>{{ question.text }}<span ng-if="question.requiredFlag" class="reqFlag">*</span></label>
+  <table class="table table-striped multipleChoiceListChooseOne">
+    <thead>
+      <tr>
+        <th class="cu-first-cell"></th>
+        <th ng-repeat="option in question.options">{{option.option_title}}</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr ng-repeat="row in question.rows">
+        <th>{{row.row_title}}</th>
+        <td ng-repeat="option in question.options"><input type="radio" name="{{row.row_id}}" value="{{option.option_value}}"></td>
+      </tr>
+    </tbody>
+  </table>
+</div>

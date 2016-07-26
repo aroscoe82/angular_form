@@ -1,0 +1,15 @@
+<label>{{ question.text }}<span ng-if="question.requiredFlag" class="reqFlag">*</span></label>
+<div class="row">
+  <div class="col-xs-6">
+    <label>{{question.scaleFormat.leftLabel || 'Not At All Likely' }}</label>
+  </div>
+  <div class="col-xs-6 text-right">
+    <label>{{question.scaleFormat.rightLabel || 'Extremely Likely' }}</label>
+  </div>
+</div>
+<ul class="list-unstyled list-justified">
+  <li ng-repeat="n in [0,1,2,3,4,5,6,7,8,9,10]">
+    <label for="option-{{question._id}}-{{$index}}">{{$index}}</label>
+    <input type="radio" name="question-{{question._id}}" id="option-{{question._id}}-{{$index}}" value="{{$index}}">
+  </li>
+</ul>

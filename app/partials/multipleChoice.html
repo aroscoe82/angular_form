@@ -1,0 +1,8 @@
+<div class="form-group">
+  <label>{{ question.text }}<span ng-if="question.requiredFlag" class="reqFlag">*</span></label>
+  <ul class="list-unstyled">
+    <li class="checkbox" ng-repeat="option in question.options">
+    <label for="option-{{question._id}}-{{option.option_id}}"><input type="checkbox" id="option-{{question._id}}-{{option.option_id}}" value="{{option.option_value}}"> {{option.option_title}}</label>
+    </li>
+  </ul>
+</div>
